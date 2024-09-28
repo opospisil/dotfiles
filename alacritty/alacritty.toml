@@ -1,0 +1,15 @@
+[colors.primary]
+background = "#141414"
+#background = "#00040a"
+
+[font]
+size = 10.0
+[font.normal]
+family = "JetBrains Mono"
+style = "Light"
+
+[window]
+opacity = 0.95
+
+[env]
+  WINIT_X11_SCALE_FACTOR = "1"

@@ -1,0 +1,11 @@
+[colors.primary]
+background = "#1d2021"
+
+[font]
+size = 13.0
+[font.normal]
+family = "JetBrains Mono"
+style = "Bold"
+
+[window]
+opacity = 0.95
