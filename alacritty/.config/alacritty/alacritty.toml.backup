@@ -1,0 +1,12 @@
+[font]
+  normal = {family = "Comics Sans Regular", style = "Normal"}
+  size = 6
+
+[window]
+  opacity = 0.40
+  decorations = "Full"
+
+[colors]
+transparent_background_colors = true
+
+
