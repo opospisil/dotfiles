@@ -1,4 +1,5 @@
-#!/usr/bin/perl
+#!/run/current-system/sw/bin/perl
+##!/usr/bin/perl
 #
 # Copyright 2014 Pierre Mavro <deimos@deimos.fr>
 # Copyright 2014 Vivien Didelot <vivien@didelot.org>
