@@ -108,6 +108,19 @@ local config = function()
     end,
   })
 
+  lspconfig.nil_ls.setup({
+    autostart = true,
+    capabilities = capabilities,
+    cmd = { "nil" },
+    settings = {
+      ['nil'] = {
+        testSetting = 42,
+        formatting = {
+          command = { "nixfmt" },
+        },
+      },
+    },
+  })
   -- lua
   lspconfig.lua_ls.setup({
     capabilities = capabilities,
@@ -129,107 +142,19 @@ local config = function()
     },
   })
 
-
-  lspconfig.volar.setup({
+  lspconfig.rust_analyzer.setup({
     capabilities = capabilities,
     on_attach = on_attach,
-    filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue', 'json' },
-  })
-
-  -- json
-  lspconfig.jsonls.setup({
-    capabilities = capabilities,
-    on_attach = on_attach,
-    filetypes = { "json", "jsonc" },
-  })
-
-  -- python
-  lspconfig.pyright.setup({
-    capabilities = capabilities,
-    on_attach = on_attach,
+    cmd = {
+      "rustup", "run", "stable", "rust-analyzer"
+    },
     settings = {
-      pyright = {
-        disableOrganizeImports = false,
-        analysis = {
-          useLibraryCodeForTypes = true,
-          autoSearchPaths = true,
-          diagnosticMode = "workspace",
-          autoImportCompletions = true,
+      ["rust-analyzer"] = {
+        rustfmt = {
+          extraArgs = { "+nightly", },
         },
-      },
-    },
-  })
-
-  -- bash
-  lspconfig.bashls.setup({
-    capabilities = capabilities,
-    on_attach = on_attach,
-    filetypes = { "sh", "aliasrc" },
-  })
-
-  -- solidity
-  lspconfig.solidity.setup({
-    capabilities = capabilities,
-    on_attach = on_attach,
-    filetypes = { "solidity" },
-  })
-
-  -- typescriptreact, javascriptreact, css, sass, scss, less, svelte, vue
-  lspconfig.emmet_ls.setup({
-    capabilities = capabilities,
-    on_attach = on_attach,
-    filetypes = {
-      "typescriptreact",
-      "javascriptreact",
-      "javascript",
-      "css",
-      "sass",
-      "scss",
-      "less",
-      "svelte",
-      "vue",
-      "html",
-      "conf",
-    },
-  })
-
-  lspconfig.yamlls.setup({
-    on_attach = on_attach,
-    capabilities = capabilities,
-    settings = {
-      yaml = {
-        format = {
-          enable = true,
-        },
-        validate = true,
-        hover = true,
-        completion = true,
-        schemaStore = {
-          url = "https://www.schemastore.org/api/json/catalog.json",
-          enable = true,
-        },
-        customTags = {
-          "!fn",
-          "!And",
-          "!If",
-          "!Not",
-          "!Equals",
-          "!Or",
-          "!FindInMap sequence",
-          "!Base64",
-          "!Cidr",
-          "!Ref",
-          "!Ref Scalar",
-          "!Sub",
-          "!GetAtt",
-          "!GetAZs",
-          "!ImportValue",
-          "!Select",
-          "!Split",
-          "!Join sequence",
-        },
-      },
-    },
+      }
+    }
   })
 
   -- docker
@@ -247,76 +172,6 @@ local config = function()
       "--offset-encoding=utf-16",
     },
   })
-
-  local luacheck = require("efmls-configs.linters.luacheck")
-  local stylua = require("efmls-configs.formatters.stylua")
-  local flake8 = require("efmls-configs.linters.flake8")
-  local black = require("efmls-configs.formatters.black")
-  local eslint = require("efmls-configs.linters.eslint")
-  local prettier_d = require("efmls-configs.formatters.prettier_d")
-  local fixjson = require("efmls-configs.formatters.fixjson")
-  local shellcheck = require("efmls-configs.linters.shellcheck")
-  local shfmt = require("efmls-configs.formatters.shfmt")
-  local hadolint = require("efmls-configs.linters.hadolint")
-  local solhint = require("efmls-configs.linters.solhint")
-  local cpplint = require("efmls-configs.linters.cpplint")
-  local clangformat = require("efmls-configs.formatters.clang_format")
-
-  -- configure efm server
-  lspconfig.efm.setup({
-    filetypes = {
-      "lua",
-      "python",
-      "json",
-      "jsonc",
-      "sh",
-      "javascript",
-      "javascriptreact",
-      "typescript",
-      "typescriptreact",
-      "svelte",
-      "vue",
-      "markdown",
-      "docker",
-      "solidity",
-      "html",
-      "css",
-      "c",
-      "cpp",
-      "yaml",
-      "hocon",
-    },
-    init_options = {
-      documentFormatting = true,
-      documentRangeFormatting = true,
-      hover = true,
-      documentSymbol = true,
-      codeAction = true,
-      completion = true,
-    },
-    settings = {
-      languages = {
-        lua = { luacheck, stylua },
-        python = { flake8, black },
-        typescript = { eslint, prettier_d },
-        json = { eslint, fixjson },
-        jsonc = { eslint, fixjson },
-        sh = { shellcheck, shfmt },
-        javascript = { eslint, prettier_d },
-        javascriptreact = { eslint, prettier_d },
-        typescriptreact = { eslint, prettier_d },
-        svelte = { eslint, prettier_d },
-        vue = { eslint, prettier_d },
-        markdown = { prettier_d },
-        docker = { hadolint, prettier_d },
-        solidity = { solhint },
-        html = { prettier_d },
-        css = { prettier_d },
-        c = { clangformat, cpplint },
-        cpp = { clangformat, cpplint },
-      },
-    },
-  })
 end
 
 return {
@@ -326,7 +181,6 @@ return {
   dependencies = {
     "windwp/nvim-autopairs",
     "williamboman/mason.nvim",
-    "creativenull/efmls-configs-nvim",
     "hrsh7th/nvim-cmp",
     "hrsh7th/cmp-buffer",
     "hrsh7th/cmp-nvim-lsp",

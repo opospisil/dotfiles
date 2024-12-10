@@ -1,15 +1,5 @@
 local opts = {
 	ensure_installed = {
-		"efm",
-		"bashls",
-		"solidity",
-		"tailwindcss",
-		"pyright",
-		-- "lua_ls",
-		"emmet_ls",
-		"jsonls",
-		"clangd",
-		"gopls",
 	},
 
 	automatic_installation = true,
