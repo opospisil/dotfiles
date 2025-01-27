@@ -4,6 +4,13 @@
 -- }
 -- Buffer Navigation
 --
+vim.keymap.set({"n", "i"}, "<Up>", "<Nop>")
+vim.keymap.set({"n", "i"}, "<Down>", "<Nop>")
+vim.keymap.set({"n", "i"}, "<Left>", "<Nop>")
+vim.keymap.set({"n", "i"}, "<Right>", "<Nop>")
+vim.keymap.set({"n", "i"}, "<C-j>", "h")
+vim.keymap.set({"n", "i"}, "<C-k>", "l")
+
 vim.keymap.set("n", "<leader>bn", ":bnext<CR>")     -- Next buffer
 vim.keymap.set("n", "<leader>bp", ":bprevious<CR>") -- Prev buffer
 vim.keymap.set("n", "<leader>bb", "<cmd>e #<CR>")   -- Switch to Other Buffer

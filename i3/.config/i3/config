@@ -105,7 +105,7 @@ bindcode $mod+Shift+19    move container to workspace  $ws10
 ######################################
 
 # start a terminal
-bindsym $mod+Return exec --no-startup-id alacritty
+bindsym $mod+Return exec --no-startup-id wezterm
 
 # kill focused window
 bindsym $mod+q kill
@@ -145,18 +145,13 @@ bindsym $mod+Right focus right
 # bindsym $mod+Shift+b move up
 # bindsym $mod+Shift+o move right
 
-bindsym $mod+K move workspace to output right
-bindsym $mod+J move workspace to output left
+bindsym $mod+Shift+l move workspace to output right
+bindsym $mod+Shift+h move workspace to output left
 
 bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Left move left
 bindsym $mod+Shift+Right move right
-# split in horizontal orientation
-bindsym $mod+h split h
-
-# split in vertical orientation
-bindsym $mod+v split v
 
 # enter fullscreen mode for the focused container
 bindsym $mod+f fullscreen toggle

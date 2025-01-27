@@ -1,5 +1,10 @@
 local diagnostic_signs = require("util.icons").diagnostic_signs
 
+show_line_diagnostics = function()
+  local opts = { focusable = false, border = "rounded", source = "always", prefix = " " }
+  vim.diagnostic.open_float(0, vim.tbl_extend("keep", opts, { scope = "line" }))
+end
+
 
 gofmt = function()
   local params = vim.lsp.util.make_range_params()
@@ -20,9 +25,8 @@ end
 
 local config = function()
   require("neoconf").setup({})
-  local cmp_nvim_lsp = require("cmp_nvim_lsp")
   local lspconfig = require("lspconfig")
-  local capabilities = cmp_nvim_lsp.default_capabilities()
+  local capabilities = require('blink.cmp').get_lsp_capabilities()
 
   for type, icon in pairs(diagnostic_signs) do
     local hl = "DiagnosticSign" .. type
@@ -30,6 +34,7 @@ local config = function()
   end
 
   lspconfig.gopls.setup({
+    capabilities = capabilities,
     on_attach = function(client, bufnr)
       -- Disable gopls's formatting capabilities
       client.server_capabilities.documentFormattingProvider = false
@@ -49,6 +54,22 @@ local config = function()
 
   local keymap = vim.keymap -- for conciseness
 
+  -- Configure diagnostics
+  vim.diagnostic.config({
+    virtual_text = false,   -- Disable virtual text
+    underline = true,       -- Enable underline for diagnostics
+    signs = true,           -- Keep diagnostic signs in the sign column
+    update_in_insert = false, -- Update diagnostics only in normal mode
+  })
+
+  -- Set curly underlines for diagnostics
+  vim.cmd([[
+  highlight DiagnosticUnderlineError gui=undercurl guisp=Red
+  highlight DiagnosticUnderlineWarn gui=undercurl guisp=Yellow
+  highlight DiagnosticUnderlineInfo gui=undercurl guisp=Blue
+  highlight DiagnosticUnderlineHint gui=undercurl guisp=Cyan
+]])
+
   vim.api.nvim_create_autocmd("LspAttach", {
     group = vim.api.nvim_create_augroup("UserLspConfig", {}),
     callback = function(ev)
@@ -57,6 +78,9 @@ local config = function()
       local opts = { buffer = ev.buf, silent = true }
 
       -- set keybinds
+
+      opts.desc = "show diagnostics"
+      vim.keymap.set("n", '<M-k>', '<cmd>lua show_line_diagnostics()<CR>', { noremap = true, silent = true })
 
       opts.desc = "fromat code"
       vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
@@ -181,8 +205,6 @@ return {
   dependencies = {
     "windwp/nvim-autopairs",
     "williamboman/mason.nvim",
-    "hrsh7th/nvim-cmp",
-    "hrsh7th/cmp-buffer",
-    "hrsh7th/cmp-nvim-lsp",
+    'saghen/blink.cmp'
   },
 }

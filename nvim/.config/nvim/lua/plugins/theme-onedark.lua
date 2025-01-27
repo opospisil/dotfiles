@@ -37,7 +37,8 @@ return {
 
       -- Custom Highlights --
       colors = {
-        bg0 = "#14141f",
+        bg0 = "#0f0f18",
+        --bg0 = "#14141f",
         bg1 = "#1b1b28",
         bg2 = "#222230",
         bg3 = "#292936",

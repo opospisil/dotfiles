@@ -17,39 +17,43 @@ local buffers_picker = {
 }
 
 local close_buffers = function(prompt_bufnr)
-    local current_picker = action_state.get_current_picker(prompt_bufnr)
-    local selections = current_picker:get_multi_selection()
+  local current_picker = action_state.get_current_picker(prompt_bufnr)
+  local selections = current_picker:get_multi_selection()
 
-    actions.close(prompt_bufnr)  -- Close the picker first
+  actions.close(prompt_bufnr) -- Close the picker first
 
-    if vim.tbl_isempty(selections) then
-        local selection = action_state.get_selected_entry()
-        vim.api.nvim_buf_delete(selection.bufnr, { force = false })
-    else
-        for _, selection in ipairs(selections) do
-            vim.api.nvim_buf_delete(selection.bufnr, { force = false })
-        end
+  if vim.tbl_isempty(selections) then
+    local selection = action_state.get_selected_entry()
+    vim.api.nvim_buf_delete(selection.bufnr, { force = false })
+  else
+    for _, selection in ipairs(selections) do
+      vim.api.nvim_buf_delete(selection.bufnr, { force = false })
     end
+  end
 
-    -- Reopen the built-in buffer picker with the desired theme and options
-    builtin.buffers(themes.get_dropdown({
-        winblend = 10,
-        layout_config = {
-            width = 0.5, -- 50% of the screen width
-        },
-        previewer = false,
-    }))
+  -- Reopen the built-in buffer picker with the desired theme and options
+  builtin.buffers(themes.get_dropdown({
+    winblend = 10,
+    layout_config = {
+      width = 0.5, -- 50% of the screen width
+    },
+    previewer = false,
+  }))
 end
 
 local config = function()
   local telescope = require("telescope")
   telescope.setup({
+    extensions = {
+      undo = {
+      },
+    },
     defaults = {
       file_ignore_patterns = {
         ".metals/",
         ".bloop/",
         ".git/",
-        ".cache",
+        ".cache/",
         "^/vendor/",
         "/vendor/",
         "vendor/",
@@ -66,7 +70,7 @@ local config = function()
         i = {
           ["<C-j>"] = "move_selection_next",
           ["<C-k>"] = "move_selection_previous",
-          ["<C-q>"] = close_buffers,
+          --["<C-q>"] = close_buffers,
         },
       },
     },
@@ -98,7 +102,10 @@ return {
   "nvim-telescope/telescope.nvim",
   tag = "0.1.3",
   lazy = false,
-  dependencies = { "nvim-lua/plenary.nvim" },
+  dependencies = {
+    "nvim-lua/plenary.nvim",
+    "debugloop/telescope-undo.nvim"
+  },
   config = config,
   keys = {
     -- vim.keymap.set("n", "<leader>ff", require("telescope.builtin").find_files, {}),
