@@ -6,23 +6,6 @@ show_line_diagnostics = function()
 end
 
 
-gofmt = function()
-  local params = vim.lsp.util.make_range_params()
-  params.context = { only = { "source.organizeImports" } }
-  local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, 1000)
-  for _, res in pairs(result or {}) do
-    for _, r in pairs(res.result or {}) do
-      if r.edit then
-        vim.lsp.util.apply_workspace_edit(r.edit, "utf-16")
-      else
-        vim.lsp.buf.execute_command(r.command)
-      end
-    end
-  end
-  vim.cmd('silent! !gofmt -w %')
-  vim.cmd('edit!')
-end
-
 local config = function()
   require("neoconf").setup({})
   local lspconfig = require("lspconfig")
@@ -36,10 +19,6 @@ local config = function()
   lspconfig.gopls.setup({
     capabilities = capabilities,
     on_attach = function(client, bufnr)
-      -- Disable gopls's formatting capabilities
-      client.server_capabilities.documentFormattingProvider = false
-      vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>f', '<cmd>w<CR><cmd>lua gofmt()<CR><cmd>w<CR>',
-        { noremap = true, silent = true })
     end,
     settings = {
       gopls = {
@@ -52,13 +31,40 @@ local config = function()
     },
   })
 
+  require("lspconfig").elixirls.setup({
+    capabilities = capabilities,
+    cmd = { "elixir-ls" },
+    init_options = {
+      extensions = {
+        credo = { enable = true }
+      },
+      experimental = {
+        completions = { enable = true }
+      }
+    }
+  })
+
+  -- require("lspconfig")["nextls"].setup({
+  --    capabilities = capabilities,
+  --    cmd = { "nextls", "--stdio" },
+  --    init_options = {
+  --      extensions = {
+  --        credo = { enable = true }
+  --      },
+  --      experimental = {
+  --        completions = { enable = true }
+  --      }
+  --    }
+  --  })
+  --
+
   local keymap = vim.keymap -- for conciseness
 
   -- Configure diagnostics
   vim.diagnostic.config({
-    virtual_text = false,   -- Disable virtual text
-    underline = true,       -- Enable underline for diagnostics
-    signs = true,           -- Keep diagnostic signs in the sign column
+    virtual_text = false,     -- Disable virtual text
+    underline = true,         -- Enable underline for diagnostics
+    signs = true,             -- Keep diagnostic signs in the sign column
     update_in_insert = false, -- Update diagnostics only in normal mode
   })
 
@@ -76,6 +82,13 @@ local config = function()
       -- Buffer local mappings.
       -- See `:help vim.lsp.*` for documentation on any of the below functions
       local opts = { buffer = ev.buf, silent = true }
+
+      vim.api.nvim_create_autocmd('BufWritePre', {
+        buffer = ev.buf,
+        callback = function()
+          vim.lsp.buf.format({ bufnr = ev.buf })
+        end,
+      })
 
       -- set keybinds
 
@@ -166,20 +179,24 @@ local config = function()
     },
   })
 
-  lspconfig.rust_analyzer.setup({
-    capabilities = capabilities,
-    on_attach = on_attach,
-    cmd = {
-      "rustup", "run", "stable", "rust-analyzer"
-    },
-    settings = {
-      ["rust-analyzer"] = {
-        rustfmt = {
-          extraArgs = { "+nightly", },
-        },
-      }
-    }
-  })
+  --  lspconfig.rust_analyzer.setup({
+  --    capabilities = capabilities,
+  --    on_attach = on_attach,
+  --    cmd = {
+  --      "rust-analyzer"
+  --      --"rustup", "run", "stable", "rust-analyzer"
+  --    },
+  --    settings = {
+  --      ["rust-analyzer"] = {
+  --        rustfmt = {
+  --          extraArgs = { "+nightly", },
+  --        },
+  --      }
+  --    }
+  --  })
+  --
+  -- clojure
+  require 'lspconfig'.clojure_lsp.setup {}
 
   -- docker
   lspconfig.dockerls.setup({
@@ -196,6 +213,11 @@ local config = function()
       "--offset-encoding=utf-16",
     },
   })
+
+  -- json
+  require 'lspconfig'.jsonls.setup {
+    capabilities = capabilities,
+  }
 end
 
 return {

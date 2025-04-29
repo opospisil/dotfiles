@@ -13,7 +13,9 @@ local config = function()
     },
     ensure_installed = {
       "go",
+      "elixir",
       "markdown",
+      "clojure",
       "json",
       "javascript",
       "typescript",

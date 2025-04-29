@@ -1,5 +1,3 @@
-vim.keymap.set("t", "<esc><esc>", "<c-\\><c-n>")
-
 local state = {
   floating = {
     buf = -1,
@@ -10,7 +8,7 @@ local state = {
 local function create_floating_window(opts)
   opts = opts or {}
   local width = opts.width or math.floor(vim.o.columns * 1.0)
-  local height = opts.height or math.floor(vim.o.lines * 0.2)
+  local height = opts.height or math.floor(vim.o.lines * 0.5)
 
   -- Calculate the position to center the window
   local col = math.floor((vim.o.columns - width) / 2)
@@ -41,11 +39,19 @@ local function create_floating_window(opts)
   return { buf = buf, win = win }
 end
 
-local toggle_terminal = function()
+Close_quaketerm = function()
+  if vim.api.nvim_win_is_valid(state.floating.win) then
+    vim.api.nvim_win_hide(state.floating.win)
+  end
+end
+
+Toggle_terminal = function()
   if not vim.api.nvim_win_is_valid(state.floating.win) then
     state.floating = create_floating_window { buf = state.floating.buf }
+    vim.cmd("startinsert") -- Ensure entering Terminal Mode
     if vim.bo[state.floating.buf].buftype ~= "terminal" then
       vim.cmd.terminal()
+      vim.cmd("startinsert") -- Ensure entering Terminal Mode
     end
   else
     vim.api.nvim_win_hide(state.floating.win)
@@ -54,4 +60,5 @@ end
 
 -- Example usage:
 -- Create a floating window with default dimensions
-vim.api.nvim_create_user_command("Quaketerm", toggle_terminal, {})
+vim.api.nvim_create_user_command("Quaketerm", Toggle_terminal, {})
+vim.api.nvim_create_user_command("QuaketermClose", Close_quaketerm, {})

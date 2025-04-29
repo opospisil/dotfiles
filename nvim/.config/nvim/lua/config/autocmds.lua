@@ -7,19 +7,28 @@ vim.api.nvim_create_autocmd("TextYankPost", {
   end,
 })
 
---vim.api.nvim_create_autocmd({ 'FileType' }, {
---  pattern = { "lir" },
+vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
+  pattern = { "*.go" },
+  callback = function()
+    vim.opt.tabstop = 4
+    vim.opt.shiftwidth = 4
+    vim.opt.expandtab = false -- Go prefers tabs
+  end
+})
+
+
+--vim.api.nvim_create_autocmd("BufWritePost", {
+--  pattern = "*.go",
 --  callback = function()
---    -- use visual mode
---    vim.api.nvim_buf_set_keymap(
---      0,
---      "x",
---      "J",
---      ':<C-u>lua require"lir.mark.actions".toggle_mark("v")<CR>',
---      { noremap = true, silent = true }
---    )
---
---    -- echo cwd
---    vim.api.nvim_echo({ { vim.fn.expand("%:p"), "Normal" } }, false, {})
---  end
+--    -- Save current cursor position
+--    local pos = vim.api.nvim_win_get_cursor(0)
+--    -- Get full path of the current file
+--    local filepath = vim.fn.shellescape(vim.fn.expand('%:p'))
+--    -- Run gofmt in shell
+--    vim.fn.system("gofmt -w " .. filepath)
+--    -- Reload the buffer
+--    vim.cmd("edit!")
+--    -- Restore cursor position
+--    vim.api.nvim_win_set_cursor(0, pos)
+--  end,
 --})
