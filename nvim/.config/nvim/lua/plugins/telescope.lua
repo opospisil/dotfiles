@@ -1,12 +1,3 @@
-local actions = require('telescope.actions')
-local action_state = require('telescope.actions.state')
-
-local pickers = require('telescope.pickers')
-local builtin = require('telescope.builtin')
-local finders = require('telescope.finders')
-local conf = require('telescope.config').values
-local themes = require('telescope.themes')
-
 local buffers_picker = {
   theme = "dropdown",
   previewer = false,
@@ -14,39 +5,14 @@ local buffers_picker = {
     width = 0.5,
     prompt_position = "top",
   },
+  sort_mru = true,
 }
-
-local close_buffers = function(prompt_bufnr)
-  local current_picker = action_state.get_current_picker(prompt_bufnr)
-  local selections = current_picker:get_multi_selection()
-
-  actions.close(prompt_bufnr) -- Close the picker first
-
-  if vim.tbl_isempty(selections) then
-    local selection = action_state.get_selected_entry()
-    vim.api.nvim_buf_delete(selection.bufnr, { force = false })
-  else
-    for _, selection in ipairs(selections) do
-      vim.api.nvim_buf_delete(selection.bufnr, { force = false })
-    end
-  end
-
-  -- Reopen the built-in buffer picker with the desired theme and options
-  builtin.buffers(themes.get_dropdown({
-    winblend = 10,
-    layout_config = {
-      width = 0.5, -- 50% of the screen width
-    },
-    previewer = false,
-  }))
-end
 
 local config = function()
   local telescope = require("telescope")
   telescope.setup({
     extensions = {
-      undo = {
-      },
+      undo = {},
     },
     defaults = {
       file_ignore_patterns = {
@@ -84,9 +50,14 @@ local config = function()
           height = 0.9,
           prompt_position = "bottom",
         },
+        find_command = { "rg", "--files", "--sort", "path" },
       },
       live_grep = {
-        theme = "dropdown",
+        layout_config = {
+          width = 0.9,
+          height = 0.9,
+          prompt_position = "bottom",
+        },
         previewer = true,
       },
       buffers = buffers_picker,
@@ -100,11 +71,11 @@ end
 
 return {
   "nvim-telescope/telescope.nvim",
-  tag = "0.1.3",
+  tag = "0.1.8",
   lazy = false,
   dependencies = {
     "nvim-lua/plenary.nvim",
-    "debugloop/telescope-undo.nvim"
+    "debugloop/telescope-undo.nvim",
   },
   config = config,
   keys = {

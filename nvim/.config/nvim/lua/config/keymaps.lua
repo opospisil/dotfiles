@@ -3,7 +3,12 @@
 -- 	silent = true,
 -- }
 -- Buffer Navigation
---
+-- Navigate splits using Ctrl+h/j/k/l
+vim.keymap.set('n', '<C-h>', '<C-w>h', { noremap = true, silent = true })
+vim.keymap.set('n', 'C-j>', '<C-w>j', { noremap = true, silent = true })
+vim.keymap.set('n', '<C-k>', '<C-w>k', { noremap = true, silent = true })
+vim.keymap.set('n', '<C-l>', '<C-w>l', { noremap = true, silent = true })
+
 vim.keymap.set({ "n", "i" }, "<Up>", "<Nop>")
 vim.keymap.set({ "n", "i" }, "<Down>", "<Nop>")
 vim.keymap.set({ "n", "i" }, "<Left>", "<Nop>")
@@ -52,8 +57,6 @@ vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]])
 vim.keymap.set({ "n", "v" }, "<leader>yA", "ggVG\"+y")
 vim.keymap.set("n", "<leader>Y", [["+Y]])
 
-vim.keymap.set({ "n", "v" }, "<leader>d", [["_d]])
-
 -- This is going to get me cancelled
 vim.keymap.set("i", "<C-c>", "<Esc>")
 vim.keymap.set("i", "jj", "<Esc>")
@@ -73,31 +76,22 @@ vim.keymap.set("n", "<leader>dt", ":DapUiToggle<CR>")
 vim.keymap.set("n", "<leader>db", ":DapToggleBreakpoint<CR>")
 vim.keymap.set("n", "<leader>dc", ":DapContinue<CR>")
 vim.keymap.set("n", "<leader>dr", ":lua require('dapui').open({reset = true})<CR>")
-vim.keymap.set("n", "<leader>ht", ":lua require('harpoon.ui').toggle_quick_menu()<CR>")
 
 vim.keymap.set("n", "<leader>fk", "<cmd>Telescope keymaps<CR>", { desc = "Show Keymaps" })
-vim.keymap.set("n", "<leader>tt", "<cmd>TodoTelescope<CR>", { desc = "Show todos in telescope" })
+vim.keymap.set("n", "<leader>ft", "<cmd>TodoTelescope<CR>", { desc = "Show todos in telescope" })
 vim.keymap.set("n", "<leader>fh", "<cmd>Telescope help_tags<CR>", { desc = "Show Help Tags" })
 vim.keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<CR>", { desc = "Find Files" })
 vim.keymap.set("n", "<leader>fb", "<cmd>Telescope buffers<CR>", { desc = "Find Buffers" })
+vim.keymap.set("v", "<leader>fg", function()
+    -- Yank the visual selection to the unnamed register
+    vim.cmd('normal! "vy')
+    -- Get the yanked text from the unnamed register
+    local selected_text = vim.fn.getreg('"')
+    require('telescope.builtin').live_grep({ default_text = selected_text })
+  end,
+  { desc = "Telescope live_grep word under cursor" })
 vim.keymap.set("n", "<leader>fg", "<cmd>Telescope live_grep<CR>", { desc = "Live Grep" })
-
-
--- ChatGPT mappings under <leader>c
-vim.keymap.set("n", "<leader>ac", "<cmd>ChatGPT<CR>", { desc = "ChatGPT" })
-vim.keymap.set("n", "<leader>ae", "<cmd>ChatGPTEditWithInstruction<CR>", { desc = "Edit with instruction" })
-vim.keymap.set("n", "<leader>ag", "<cmd>ChatGPTRun grammar_correction<CR>", { desc = "Grammar Correction" })
-vim.keymap.set("n", "<leader>at", "<cmd>ChatGPTRun translate<CR>", { desc = "Translate" })
-vim.keymap.set("n", "<leader>ak", "<cmd>ChatGPTRun keywords<CR>", { desc = "Keywords" })
-vim.keymap.set("n", "<leader>ad", "<cmd>ChatGPTRun docstring<CR>", { desc = "Docstring" })
-vim.keymap.set("n", "<leader>aa", "<cmd>ChatGPTRun add_tests<CR>", { desc = "Add Tests" })
-vim.keymap.set("n", "<leader>ao", "<cmd>ChatGPTRun optimize_code<CR>", { desc = "Optimize Code" })
-vim.keymap.set("n", "<leader>as", "<cmd>ChatGPTRun summarize<CR>", { desc = "Summarize" })
-vim.keymap.set("n", "<leader>af", "<cmd>ChatGPTRun fix_bugs<CR>", { desc = "Fix Bugs" })
-vim.keymap.set("n", "<leader>ax", "<cmd>ChatGPTRun explain_code<CR>", { desc = "Explain Code" })
-vim.keymap.set("n", "<leader>ar", "<cmd>ChatGPTRun roxygen_edit<CR>", { desc = "Roxygen Edit" })
-vim.keymap.set("n", "<leader>al", "<cmd>ChatGPTRun code_readability_analysis<CR>", { desc = "Code Readability Analysis" })
-
+vim.keymap.set("n", "<leader>fr", "<cmd>Telescope lsp_references<CR>", { desc = "LSP references" })
 
 vim.keymap.set('n', '<SHIFT-F5>', function() require('dap').continue() end)
 vim.keymap.set('n', '<SHIFT-F6>', function() require('dap').step_over() end)
@@ -127,3 +121,10 @@ end)
 
 vim.keymap.set('n', '<Leader>dui', function() require('dapui').open() end)
 vim.keymap.set('n', '<Leader>duc', function() require('dapui').close() end)
+
+
+-- Keybindings for terraform validate and plan
+vim.keymap.set("n", "<leader>tv", "<cmd>TerraformValidate<CR>",
+  { noremap = true, silent = true, desc = "Run terraform validate" })
+vim.keymap.set("n", "<leader>tp", "<cmd>TerraformPlan<CR>",
+  { noremap = true, silent = true, desc = "Run terraform plan" })

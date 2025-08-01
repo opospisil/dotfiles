@@ -73,7 +73,7 @@ return {
     keymap = {
       preset = 'default',
       ['<C-Tab>'] = { 'select_next', 'fallback' },
-      ['<Tab>'] = { 'accept', 'fallback' },
+      ['<Tab>'] = { 'accept', nil },
     },
 
     appearance = {
