@@ -155,9 +155,10 @@ config.colors = {
 
 config.audible_bell = "Disabled"
 --config.font = wezterm.font('FiraCode Nerd Font', { weight = 'Thin' })
-config.font = wezterm.font('Iosevka', { weight = 'ExtraLight' })
+config.font = wezterm.font('IosevkaTerm Nerd Font', { weight = 'ExtraLight' })
 --config.font = wezterm.font('JetBrains Mono', { weight = 'Thin' })
-config.font_size = 10.5
+config.font_size = 13
+--config.font_size = 10.5
 
 config.window_decorations = "RESIZE"
 config.window_padding = {
@@ -167,7 +168,7 @@ config.window_padding = {
   bottom = 0,
 }
 --config.line_height = 0.88
-config.line_height = 1.1
+--config.line_height = 1.1
 --config.cell_width = 0.9
 
 -- Dim inactive panes
