@@ -60,6 +60,7 @@ vim.pack.add({
   { src = "https://github.com/navarasu/onedark.nvim" },
   { src = "https://github.com/nvim-treesitter/nvim-treesitter" },
   { src = "https://github.com/folke/which-key.nvim" },
+  { src = "https://github.com/saghen/blink.cmp" },
 })
 
 vim.lsp.enable({
@@ -71,12 +72,14 @@ vim.lsp.enable({
 vim.diagnostic.config({
   virtual_lines = { current_line = true }
 })
-vim.cmd("set completeopt+=noselect")
 
 require "mini.pick".setup()
 require "oil".setup()
 require "mason".setup()
 require "gitsigns".setup()
+require "blink.cmp".setup({
+    completion = { documentation = { auto_show = true } },
+})
 require "onedark".setup({
   -- Main options --
   style = 'darker',             -- Default theme style. Choose between 'dark', 'darker', 'cool', 'deep', 'warm', 'warmer' and 'light'
