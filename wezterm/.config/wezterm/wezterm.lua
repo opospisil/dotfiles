@@ -157,8 +157,7 @@ config.audible_bell = "Disabled"
 --config.font = wezterm.font('FiraCode Nerd Font', { weight = 'Thin' })
 config.font = wezterm.font('IosevkaTerm Nerd Font', { weight = 'ExtraLight' })
 --config.font = wezterm.font('JetBrains Mono', { weight = 'Thin' })
-config.font_size = 13
---config.font_size = 10.5
+config.font_size = 10.5
 
 config.window_decorations = "RESIZE"
 config.window_padding = {

@@ -69,7 +69,7 @@ return {
     vim.lsp.enable('gopls')
     vim.lsp.enable('nil-ls')
     vim.lsp.enable('terraform-ls')
-    vim.lsp.enable('clangd')
+    --vim.lsp.enable('clangd')
     --vim.lsp.enable('ansible')
   end,
   lazy = false,
