@@ -48,7 +48,7 @@ vim.opt.winborder = "rounded"
 vim.o.termguicolors = true
 
 vim.pack.add({
-  { src= "https://github.com/norcalli/nvim-colorizer.lua"},
+  { src = "https://github.com/norcalli/nvim-colorizer.lua" },
   { src = "https://github.com/nvim-tree/nvim-web-devicons" },
   { src = "https://github.com/vague2k/vague.nvim" },
   { src = "https://github.com/stevearc/oil.nvim" },
@@ -73,13 +73,21 @@ vim.diagnostic.config({
   virtual_lines = { current_line = true }
 })
 
-require "mini.pick".setup()
+require "mini.pick".setup({
+  tool = 'fd'
+})
 require "oil".setup()
 require "mason".setup()
 require "gitsigns".setup()
+require "colorizer".setup()
 require "blink.cmp".setup({
-    completion = { documentation = { auto_show = true } },
+  completion = { documentation = { auto_show = true } },
+  keymap = {
+    preset = "default",
+    ['<Tab>'] = { 'select_and_accept' },
+  },
 })
+
 require "onedark".setup({
   -- Main options --
   style = 'darker',             -- Default theme style. Choose between 'dark', 'darker', 'cool', 'deep', 'warm', 'warmer' and 'light'
@@ -183,8 +191,10 @@ require "nvim-treesitter.configs".setup({
 })
 
 vim.keymap.set('n', '<leader>o', ':update<CR> :source<CR>')
-vim.keymap.set('n', '<leader>f', ':Pick files<CR>')
-vim.keymap.set('n', '<leader>h', ':Pick help<CR>')
+vim.keymap.set('n', '<leader>ff', ':Pick files tool="fd"<CR>')
+vim.keymap.set('n', '<leader>fg', ':Pick grep_live<CR>')
+vim.keymap.set('n', '<leader>fb', ':Pick buffers<CR>')
+vim.keymap.set('n', '<leader>fh', ':Pick help<CR>')
 vim.keymap.set('n', '<leader>e', ':Oil<CR>')
 -- Navigate splits using Ctrl+h/j/k/l
 vim.keymap.set('n', '<C-h>', '<C-w>h', { noremap = true, silent = true })
@@ -198,9 +208,7 @@ vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 
 vim.keymap.set("n", "<C-d>", "<C-d>zz")
 vim.keymap.set("n", "<C-u>", "<C-u>zz")
--- greatest remap ever
 vim.keymap.set("x", "<leader>p", [["_dP]])
--- next greatest remap ever : asbjornHaland
 vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]])
 vim.keymap.set({ "n", "v" }, "<leader>yA", "ggVG\"+y")
 vim.keymap.set("n", "<leader>Y", [["+Y]])
@@ -226,7 +234,7 @@ local lsp_keymaps = function(bufnr)
     { buffer = bufnr, noremap = true, silent = true, desc = "Go to definition" })
 
   -- Find references with Telescope
-  vim.keymap.set('n', '<leader>gr', '<cmd>Telescope lsp_references<CR>',
+  vim.keymap.set('n', '<leader>gr', vim.lsp.buf.references,
     { buffer = bufnr, noremap = true, silent = true, desc = "Find references" })
 
   -- Find implementations with Telescope
@@ -288,10 +296,10 @@ vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
 vim.api.nvim_create_autocmd('LspAttach', {
   group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
   callback = function(ev)
-    local client = vim.lsp.get_client_by_id(ev.data.client_id)
-    if client:supports_method('textDocument/completion') then
-      vim.lsp.completion.enable(true, client.id, ev.buf, { autotrigger = true })
-    end
+    --local client = vim.lsp.get_client_by_id(ev.data.client_id)
+    --if client:supports_method('textDocument/completion') then
+    --  vim.lsp.completion.enable(true, client.id, ev.buf, { autotrigger = true })
+    --end
     -- Set up keymappings
     lsp_keymaps(ev.buf)
 
