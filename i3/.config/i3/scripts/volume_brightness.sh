@@ -1,10 +1,10 @@
-# #!/bin/zsh
+#!/bin/bash
 # original source: https://gitlab.com/Nmoleo/i3-volume-brightness-indicator
 
 # taken from here: https://gitlab.com/Nmoleo/i3-volume-brightness-indicator
 
 # See README.md for usage instructions
-bar_color="#7f7fff"
+bar_color="#9f7fff"
 volume_step=2
 brightness_step=2.5
 max_volume=100
