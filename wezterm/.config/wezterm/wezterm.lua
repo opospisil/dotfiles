@@ -262,6 +262,6 @@ wezterm.on("update-right-status", function(window, _)
   })
 end)
 
--- and finally, return the configuration to wezterm
 config.front_end = "WebGpu"
+config.term = 'wezterm'
 return config

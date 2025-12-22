@@ -34,7 +34,17 @@
 --- - remove unused code
 
 return {
-  init_options = { hostInfo = 'neovim' },
+  init_options = {
+    hostInfo = 'neovim',
+    plugins = {
+      {
+        name = "@vue/typescript-plugin",
+        location = "/usr/local/lib/node_modules/@vue/language-server",
+        languages = { "vue" },
+      },
+    },
+
+  },
   cmd = { 'typescript-language-server', '--stdio' },
   filetypes = {
     'javascript',

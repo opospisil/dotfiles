@@ -104,3 +104,6 @@ alias zi=__zoxide_zi
 # ~/.config/fish/config.fish):
 #
 #   zoxide init fish | source
+
+# opencode
+fish_add_path /home/o/.opencode/bin

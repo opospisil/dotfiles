@@ -1,0 +1,80 @@
+{
+  "plugins": {
+    "blink.cmp": {
+      "rev": "8483171db6c780545589e63160b020c6af3dedf4",
+      "src": "https://github.com/saghen/blink.cmp"
+    },
+    "fzf-lua": {
+      "rev": "c0c0926eee09f2e7868e5b72cb66decc0cb13aca",
+      "src": "https://github.com/ibhagwan/fzf-lua"
+    },
+    "gitsigns.nvim": {
+      "rev": "1ee5c1fd068c81f9dd06483e639c2aa4587dc197",
+      "src": "https://github.com/lewis6991/gitsigns.nvim"
+    },
+    "hardtime.nvim": {
+      "rev": "b4e4319",
+      "src": "https://github.com/m4xshen/hardtime.nvim"
+    },
+    "mason.nvim": {
+      "rev": "ad7146aa61dcaeb54fa900144d768f040090bff0",
+      "src": "https://github.com/mason-org/mason.nvim"
+    },
+    "mini.pick": {
+      "rev": "96ee37d07043aeed90ae6ae32733b2d0db8f1c13",
+      "src": "https://github.com/echasnovski/mini.pick"
+    },
+    "nvim-colorizer.lua": {
+      "rev": "a065833f35a3a7cc3ef137ac88b5381da2ba302e",
+      "src": "https://github.com/norcalli/nvim-colorizer.lua"
+    },
+    "nvim-treesitter": {
+      "rev": "42fc28ba918343ebfd5565147a42a26580579482",
+      "src": "https://github.com/nvim-treesitter/nvim-treesitter"
+    },
+    "nvim-web-devicons": {
+      "rev": "b8221e42cf7287c4dcde81f232f58d7b947c210d",
+      "src": "https://github.com/nvim-tree/nvim-web-devicons"
+    },
+    "oil.nvim": {
+      "rev": "919e155fdf38e9148cdb5304faaaf53c20d703ea",
+      "src": "https://github.com/stevearc/oil.nvim"
+    },
+    "onedark.nvim": {
+      "rev": "de495fabe171d48aed5525f002d14414efcecbb2",
+      "src": "https://github.com/navarasu/onedark.nvim"
+    },
+    "opencode.nvim": {
+      "rev": "9851bd3",
+      "src": "https://github.com/NickvanDyke/opencode.nvim"
+    },
+    "precognition.nvim": {
+      "rev": "2aae268",
+      "src": "https://github.com/tris203/precognition.nvim"
+    },
+    "rustaceanvim": {
+      "rev": "25de2236be57cb061854bcaaf3de6707530ab792",
+      "src": "https://github.com/mrcjkb/rustaceanvim"
+    },
+    "tiny-inline-diagnostic.nvim": {
+      "rev": "994c13d",
+      "src": "https://github.com/rachartier/tiny-inline-diagnostic.nvim"
+    },
+    "typst-preview.nvim": {
+      "rev": "1603d37bb44ed2efa0b4378d1dfedc087b4f2141",
+      "src": "https://github.com/chomosuke/typst-preview.nvim"
+    },
+    "vague.nvim": {
+      "rev": "27a19ffd5c0456a521813029a99ce76d71dd4cf2",
+      "src": "https://github.com/vague2k/vague.nvim"
+    },
+    "vim-fugitive": {
+      "rev": "61b51c0",
+      "src": "https://github.com/tpope/vim-fugitive"
+    },
+    "which-key.nvim": {
+      "rev": "904308e6885bbb7b60714c80ab3daf0c071c1492",
+      "src": "https://github.com/folke/which-key.nvim"
+    }
+  }
+}

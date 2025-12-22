@@ -48,7 +48,9 @@ vim.opt.winborder = "rounded"
 vim.o.termguicolors = true
 
 vim.pack.add({
+  { src = "https://github.com/rachartier/tiny-inline-diagnostic.nvim" },
   { src = "https://github.com/mrcjkb/rustaceanvim" },
+  { src = "https://github.com/m4xshen/hardtime.nvim"},
   { src = "https://github.com/ibhagwan/fzf-lua" },
   { src = "https://github.com/norcalli/nvim-colorizer.lua" },
   { src = "https://github.com/nvim-tree/nvim-web-devicons" },
@@ -63,32 +65,122 @@ vim.pack.add({
   { src = "https://github.com/nvim-treesitter/nvim-treesitter" },
   { src = "https://github.com/folke/which-key.nvim" },
   { src = "https://github.com/saghen/blink.cmp" },
+  { src = "https://github.com/tpope/vim-fugitive" },
 })
 
 vim.lsp.enable({
   "lua_ls",
   "gopls",
+  "vtsls",
+  "basedpyright",
 })
 
 
-vim.diagnostic.config({
-  virtual_lines = { current_line = true }
-})
+-- vim.diagnostic.config({
+--   virtual_lines = { current_line = false }
+-- })
+require("tiny-inline-diagnostic").setup({
+    transparent_bg = true,
+    transparent_cursorline = true,
+    options = {
+        use_icons_from_diagnostic = false,
+        -- Minimum number of characters before wrapping long messages
+        softwrap = 30,
 
+        add_messages = {
+            messages = true,           -- Show full diagnostic messages
+            display_count = false,     -- Show diagnostic count instead of messages when cursor not on line
+            use_max_severity = false,  -- When counting, only show the most severe diagnostic
+            show_multiple_glyphs = true, -- Show multiple icons for multiple diagnostics of same severity
+        },
+
+        -- Settings for multiline diagnostics
+        multilines = {
+            enabled = true,           -- Enable support for multiline diagnostic messages
+            always_show = true,       -- Always show messages on all lines of multiline diagnostics
+            trim_whitespaces = false,  -- Remove leading/trailing whitespace from each line
+            tabstop = 4,               -- Number of spaces per tab when expanding tabs
+            severity = nil,            -- Filter multiline diagnostics by severity (e.g., { vim.diagnostic.severity.ERROR })
+          },
+
+        -- Show all diagnostics on the current cursor line, not just those under the cursor
+        show_all_diags_on_cursorline = true,
+
+        -- Display related diagnostics from LSP relatedInformation
+        show_related = {
+            enabled = true,           -- Enable displaying related diagnostics
+            max_count = 3,             -- Maximum number of related diagnostics to show per diagnostic
+        },
+
+        -- Enable diagnostics display in insert mode
+        -- May cause visual artifacts; consider setting throttle to 0 if enabled
+        enable_on_insert = false,
+
+        -- Enable diagnostics display in select mode (e.g., during auto-completion)
+        enable_on_select = false,
+
+        -- Handle messages that exceed the window width
+        overflow = {
+            mode = "wrap",             -- "wrap": split into lines, "none": no truncation, "oneline": keep single line
+            padding = 0,               -- Extra characters to trigger wrapping earlier
+        },
+
+        -- Break long messages into separate lines
+        break_line = {
+            enabled = false,           -- Enable automatic line breaking
+            after = 30,                -- Number of characters before inserting a line break
+        },
+
+        -- Custom function to format diagnostic messages
+        -- Receives diagnostic object, returns formatted string
+        -- Example: function(diag) return diag.message .. " [" .. diag.source .. "]" end
+        format = nil,
+
+        -- Virtual text display priority
+        -- Higher values appear above other plugins (e.g., GitBlame)
+        virt_texts = {
+            priority = 2048,
+        },
+
+        -- Filter diagnostics by severity levels
+        -- Remove severities you don't want to display
+        severity = {
+            vim.diagnostic.severity.ERROR,
+            vim.diagnostic.severity.WARN,
+            vim.diagnostic.severity.INFO,
+            vim.diagnostic.severity.HINT,
+        },
+
+        -- Events that trigger attaching diagnostics to buffers
+        -- Default is {"LspAttach"}; change only if plugin doesn't work with your LSP setup
+        overwrite_events = nil,
+
+        -- Automatically disable diagnostics when opening diagnostic float windows
+        override_open_float = false,
+    },
+})
 require "mini.pick".setup({
   tool = 'fd'
 })
-require "oil".setup()
+require "oil".setup({
+  view_options = {
+    -- Show files and directories that start with "."
+    show_hidden = true,
+  }
+})
 require "mason".setup()
+require "hardtime".setup()
+--require "precognition".setup()
 require "gitsigns".setup()
 require "colorizer".setup()
---require "blink.cmp".setup({
---  completion = { documentation = { auto_show = true } },
---  keymap = {
---    preset = "default",
---    ['<Tab>'] = { 'select_and_accept' },
---  },
---})
+require "blink.cmp".setup({
+fuzzy = { implementation = "prefer_rust" },
+  completion = { documentation = { auto_show = true } },
+  keymap = {
+    preset = "default",
+    ['<Tab>'] = { 'select_and_accept' },
+  },
+})
 
 require "onedark".setup({
   -- Main options --
@@ -186,6 +278,10 @@ vim.keymap.set('n', '<leader>fg', ':FzfLua live_grep<CR>')
 vim.keymap.set('n', '<leader>fb', ':FzfLua buffers<CR>')
 vim.keymap.set('n', '<leader>fr', ':FzfLua lsp_references<CR>')
 vim.keymap.set('n', '<leader>fd', ':FzfLua lsp_workspace_diagnostics<CR>')
+vim.keymap.set('n', '<leader>hn', '<cmd>Gitsigns next_hunk<CR>')
+vim.keymap.set('n', '<leader>hp', '<cmd>Gitsigns prev_hunk<CR>')
+vim.keymap.set('n', '<leader>hr', '<cmd>Gitsigns reset_hunk<CR>')
+vim.keymap.set('i', '<C-k>', function() vim.lsp.buf.signature_help() end)
 vim.keymap.set('n', '<leader>e', ':Oil<CR>')
 -- Navigate splits using Ctrl+h/j/k/l
 vim.keymap.set('n', '<C-h>', '<C-w>h', { noremap = true, silent = true })
@@ -215,8 +311,19 @@ vim.keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz")
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gc<Left><Left><Left>]])
 
 
+-- Define your statusline
+-- %f                    - Path to the file
+-- %{FugitiveStatusline()} - The Git branch function
+-- %m                    - Modified flag ([+])
+-- %r                    - Read-only flag ([RO])
+-- %=                    - Separator (moves next items to the right)
+-- %l                    - Current line number
+-- %c                    - Current column number
+-- %P                    - Percentage through the file
+vim.o.statusline = "%f %= %{FugitiveStatusline()} %m%r%l:%c %P"
 vim.cmd("colorscheme onedark")
 vim.cmd(":hi statusline guibg=NONE")
+
 
 -- LSP keymappings
 local lsp_keymaps = function(bufnr)
@@ -301,5 +408,13 @@ vim.api.nvim_create_autocmd('LspAttach', {
         vim.lsp.buf.format({ bufnr = ev.buf })
       end,
     })
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "go",
+  callback = function()
+    vim.opt_local.makeprg = "./static-analysis.sh --plain"
+    vim.opt_local.errorformat = [[%f:%l:%c: %m,%f:%l: %m]]
   end,
 })

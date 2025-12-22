@@ -1,11 +1,22 @@
+[general]
+import = [
+   #"~/.config/alacritty/themes/themes/base16_default_dark.toml"
+    "~/.config/alacritty/themes/themes/blood_moon.toml"
+]
 [colors.primary]
-background = "#1d2021"
+#foreground = "#6a6a6b"
+background = "#0f0f18"
 
 [font]
-size = 13.0
+size =10.5
+
 [font.normal]
-family = "JetBrains Mono"
-style = "Bold"
+family = "IosevkaTerm Nerd Font"
+style = "Light"
 
 [window]
-opacity = 0.95
+opacity = 1
+
+[env]
+  WINIT_X11_SCALE_FACTOR = "1"
+  TERM = "xterm-256color"
