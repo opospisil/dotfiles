@@ -3,7 +3,7 @@
 SESSION="backend"
 WINDOW="services"
 BACKEND_DIR="$HOME/code/dtsp/backend"
-SERVICES=("gateway" "identity" "target" "container" "satellite")
+SERVICES=("gateway" "identity" "target" "container" "satellite" "project")
 
 # Check if we're in a tmux session
 if [[ -z "$TMUX" ]]; then

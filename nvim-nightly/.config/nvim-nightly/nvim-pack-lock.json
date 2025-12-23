@@ -2,7 +2,8 @@
   "plugins": {
     "blink.cmp": {
       "rev": "8483171db6c780545589e63160b020c6af3dedf4",
-      "src": "https://github.com/saghen/blink.cmp"
+      "src": "https://github.com/Saghen/blink.cmp",
+      "version": ">=0.0.0"
     },
     "fzf-lua": {
       "rev": "c0c0926eee09f2e7868e5b72cb66decc0cb13aca",
@@ -27,6 +28,10 @@
     "nvim-colorizer.lua": {
       "rev": "a065833f35a3a7cc3ef137ac88b5381da2ba302e",
       "src": "https://github.com/norcalli/nvim-colorizer.lua"
+    },
+    "nvim-justice": {
+      "rev": "116cd589068bca11d64ae87ada7388d508c1aa06",
+      "src": "https://github.com/chrisgrieser/nvim-justice"
     },
     "nvim-treesitter": {
       "rev": "42fc28ba918343ebfd5565147a42a26580579482",

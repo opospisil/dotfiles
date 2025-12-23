@@ -48,6 +48,7 @@ vim.opt.winborder = "rounded"
 vim.o.termguicolors = true
 
 vim.pack.add({
+  { src = "https://github.com/chrisgrieser/nvim-justice" },
   { src = "https://github.com/rachartier/tiny-inline-diagnostic.nvim" },
   { src = "https://github.com/mrcjkb/rustaceanvim" },
   { src = "https://github.com/m4xshen/hardtime.nvim"},
@@ -64,7 +65,7 @@ vim.pack.add({
   { src = "https://github.com/navarasu/onedark.nvim" },
   { src = "https://github.com/nvim-treesitter/nvim-treesitter" },
   { src = "https://github.com/folke/which-key.nvim" },
-  { src = "https://github.com/saghen/blink.cmp" },
+  { src = 'https://github.com/Saghen/blink.cmp', version = vim.version.range('*') },
   { src = "https://github.com/tpope/vim-fugitive" },
 })
 
@@ -79,6 +80,9 @@ vim.lsp.enable({
 -- vim.diagnostic.config({
 --   virtual_lines = { current_line = false }
 -- })
+--
+require ("justice").setup({})
+
 require("tiny-inline-diagnostic").setup({
     transparent_bg = true,
     transparent_cursorline = true,
@@ -418,3 +422,87 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.opt_local.errorformat = [[%f:%l:%c: %m,%f:%l: %m]]
   end,
 })
+
+-- Justfile support
+-- Function to get just recipes
+local function get_just_recipes()
+  local justfile_exists = vim.fn.filereadable("justfile") == 1 or 
+                          vim.fn.filereadable("Justfile") == 1 or
+                          vim.fn.filereadable(".justfile") == 1
+  if not justfile_exists then
+    return {}
+  end
+  
+  local recipes = {}
+  local handle = io.popen("just --summary 2>/dev/null")
+  if handle then
+    local result = handle:read("*a")
+    handle:close()
+    -- just --summary outputs recipes separated by spaces
+    for recipe in result:gmatch("%S+") do
+      table.insert(recipes, recipe)
+    end
+  end
+  return recipes
+end
+
+-- Custom completion function for :make command
+vim.api.nvim_create_user_command('Make', function(opts)
+  if opts.args == '' then
+    vim.cmd('make')
+  else
+    vim.cmd('make ' .. opts.args)
+  end
+end, {
+  nargs = '?',
+  complete = function(ArgLead, CmdLine, CursorPos)
+    local recipes = get_just_recipes()
+    if #recipes == 0 then
+      return {}
+    end
+    -- Filter recipes that match the current input
+    local matches = {}
+    for _, recipe in ipairs(recipes) do
+      if recipe:find('^' .. vim.pesc(ArgLead)) then
+        table.insert(matches, recipe)
+      end
+    end
+    return matches
+  end,
+  desc = "Run make with just recipe completion"
+})
+
+-- Detect justfiles and set makeprg
+vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
+  pattern = {"justfile", "Justfile", ".justfile"},
+  callback = function()
+    vim.bo.filetype = "just"
+    vim.opt_local.makeprg = "just"
+    vim.opt_local.errorformat = [[%f:%l:%c: %m,%f:%l: %m]]
+  end,
+})
+
+-- Auto-detect justfile in current directory and set makeprg
+vim.api.nvim_create_autocmd({"VimEnter", "DirChanged"}, {
+  callback = function()
+    local justfile_exists = vim.fn.filereadable("justfile") == 1 or 
+                            vim.fn.filereadable("Justfile") == 1 or
+                            vim.fn.filereadable(".justfile") == 1
+    if justfile_exists then
+      vim.opt.makeprg = "just"
+      vim.opt.errorformat = [[%f:%l:%c: %m,%f:%l: %m]]
+    end
+  end,
+})
+
+-- Keymap to list available just recipes
+vim.keymap.set('n', '<leader>jl', function()
+  local justfile_exists = vim.fn.filereadable("justfile") == 1 or 
+                          vim.fn.filereadable("Justfile") == 1 or
+                          vim.fn.filereadable(".justfile") == 1
+  if justfile_exists then
+    vim.cmd('terminal just --list')
+  else
+    print("No justfile found in current directory")
+  end
+end, { noremap = true, silent = true, desc = "List just recipes" })
