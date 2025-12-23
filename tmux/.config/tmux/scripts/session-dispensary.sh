@@ -13,7 +13,7 @@ else
     selected=$(fd . "${DIRS[@]}" --type=dir --follow --max-depth=1 --full-path --base-directory $HOME \
         | sed "s|^$HOME/||" \
         | grep -v "^code/dtsp$" \
-        | sk --margin 10% --color="bw")
+        | sk --margin 10% )
 
     [[ $selected ]] && selected="$HOME/$selected"
 fi
