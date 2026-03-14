@@ -102,10 +102,16 @@ bindsym $mod+Right focus right
 bindsym $mod+Shift+l move workspace to output right
 bindsym $mod+Shift+h move workspace to output left
 
-bindsym $mod+Shift+Down move down
-bindsym $mod+Shift+Up move up
-bindsym $mod+Shift+Left move left
-bindsym $mod+Shift+Right move right
+bindsym $mod+Ctrl+Down move down
+bindsym $mod+Ctrl+Up move up
+bindsym $mod+Ctrl+Left move left
+bindsym $mod+Ctrl+Right move right
+
+# resize focused container with arrows (hold keys to keep resizing)
+bindsym $mod+Shift+Left resize shrink width 10 px or 10 ppt
+bindsym $mod+Shift+Down resize grow height 10 px or 10 ppt
+bindsym $mod+Shift+Up resize shrink height 10 px or 10 ppt
+bindsym $mod+Shift+Right resize grow width 10 px or 10 ppt
 
 # enter fullscreen mode for the focused container
 bindsym $mod+f fullscreen toggle
@@ -286,4 +292,3 @@ bindsym $mod+space exec --no-startup-id rofi -modi drun -show drun \
 
 bindsym $mod+t exec --no-startup-id rofi -show window \
 		-config ~/.config/rofi/rofidmenu.rasi
-
