@@ -48,7 +48,7 @@ vim.opt.winborder = "rounded"
 vim.o.termguicolors = true
 
 vim.pack.add({
-  { src = "https://github.com/ThePrimeagen/99" },
+  { src = "https://github.com/kdheepak/lazygit.nvim" },
   { src = "https://github.com/chrisgrieser/nvim-justice" },
   { src = "https://github.com/rachartier/tiny-inline-diagnostic.nvim" },
   { src = "https://github.com/mrcjkb/rustaceanvim" },
@@ -82,91 +82,6 @@ vim.lsp.enable({
 --   virtual_lines = { current_line = false }
 -- })
 --
-local function resolve_99_provider(_99)
-  if vim.fn.executable("opencode") == 1 then
-    return nil, "opencode"
-  end
-  if vim.fn.executable("claude") == 1 then
-    return _99.Providers.ClaudeCodeProvider, "claude"
-  end
-  if vim.fn.executable("cursor-agent") == 1 then
-    return _99.Providers.CursorAgentProvider, "cursor-agent"
-  end
-  if vim.fn.executable("gemini") == 1 then
-    return _99.Providers.GeminiCLIProvider, "gemini"
-  end
-  return nil, nil
-end
-
--- Check if the plugin is actually installed/loaded before configuring
-local status, _99 = pcall(require, "99")
-if status then
-  local cwd = vim.uv.cwd()
-  local basename = vim.fs.basename(cwd)
-  local provider, provider_name = resolve_99_provider(_99)
-
-  _99.setup({
-    provider = provider,
-    display_errors = true,
-    logger = {
-      level = _99.DEBUG,
-      type = "file",
-      path = "/tmp/" .. basename .. ".99.debug",
-      print_on_error = true,
-    },
-    tmp_dir = "./tmp",
-    completion = {
-      custom_rules = {
-        "scratch/custom_rules/",
-      },
-      files = {
-        -- enabled = true,
-        -- max_file_size = 102400,
-        -- max_files = 5000,
-        -- exclude = { ".env", ".env.*", "node_modules", ".git" },
-      },
-      source = "blink",
-    },
-    md_files = {
-      "AGENT.md",
-    },
-  })
-
-  _G._99 = _99
-
-  vim.keymap.set("v", "<leader>9v", function()
-    _99.visual()
-  end, { desc = "99: Visual Selection" })
-
-  vim.keymap.set("n", "<leader>9x", function()
-    _99.stop_all_requests()
-  end, { desc = "99: Stop Requests" })
-
-  vim.keymap.set("n", "<leader>9s", function()
-    _99.search()
-  end, { desc = "99: Search" })
-
-  vim.api.nvim_create_user_command("NineNineSearch", function()
-    require("99").search()
-  end, { desc = "99: Prompted search" })
-
-  vim.api.nvim_create_user_command("NineNineVisual", function()
-    require("99").visual()
-  end, { desc = "99: Prompted visual rewrite" })
-
-  vim.api.nvim_create_user_command("NineNineStop", function()
-    require("99").stop_all_requests()
-  end, { desc = "99: Stop all requests" })
-
-  if provider_name ~= "opencode" and provider_name ~= nil then
-    vim.notify("99: opencode not found, using " .. provider_name, vim.log.levels.INFO)
-  elseif provider_name == nil then
-    vim.notify("99: no supported CLI found (opencode/claude/cursor-agent/gemini)", vim.log.levels.WARN)
-  end
-else
-  vim.notify("99 plugin is not installed or failed to load", vim.log.levels.WARN)
-end
-
 require ("justice").setup({})
 
 require("tiny-inline-diagnostic").setup({
