@@ -1,0 +1,540 @@
+local opt = vim.opt
+
+-- Tab / Indentation
+opt.tabstop = 2
+opt.shiftwidth = 2
+opt.softtabstop = 2
+opt.expandtab = true
+opt.smartindent = true
+opt.wrap = false
+
+-- Search
+opt.incsearch = true
+opt.ignorecase = true
+opt.smartcase = true
+opt.hlsearch = false
+
+-- Appearance
+opt.number = true
+opt.relativenumber = true
+opt.termguicolors = true
+opt.colorcolumn = "100"
+opt.signcolumn = "yes"
+opt.cmdheight = 1
+opt.scrolloff = 10
+opt.completeopt = "menuone,noinsert,noselect"
+
+-- Behaviour
+opt.hidden = true
+opt.errorbells = false
+opt.swapfile = false
+opt.backup = false
+opt.undodir = vim.fn.expand("~/.vim/undodir")
+opt.undofile = true
+opt.backspace = "indent,eol,start"
+opt.splitright = true
+opt.splitbelow = true
+opt.autochdir = false
+opt.iskeyword:append("-")
+opt.selection = "exclusive"
+opt.mouse = "a"
+opt.clipboard:append("unnamedplus")
+opt.modifiable = true
+opt.encoding = "UTF-8"
+opt.showmode = false
+
+vim.g.mapleader = " "
+vim.opt.winborder = "rounded"
+vim.o.termguicolors = true
+
+vim.pack.add({
+  { src = "https://github.com/kdheepak/lazygit.nvim" },
+  { src = "https://github.com/chrisgrieser/nvim-justice" },
+  { src = "https://github.com/rachartier/tiny-inline-diagnostic.nvim" },
+  { src = "https://github.com/mrcjkb/rustaceanvim" },
+  { src = "https://github.com/m4xshen/hardtime.nvim"},
+  { src = "https://github.com/norcalli/nvim-colorizer.lua" },
+  { src = "https://github.com/nvim-tree/nvim-web-devicons" },
+  { src = "https://github.com/vague2k/vague.nvim" },
+  { src = "https://github.com/stevearc/oil.nvim" },
+  { src = "https://github.com/folke/snacks.nvim" },
+  { src = "https://github.com/nvim-treesitter/nvim-treesitter" },
+  { src = "https://github.com/chomosuke/typst-preview.nvim" },
+  { src = "https://github.com/mason-org/mason.nvim" },
+  { src = "https://github.com/lewis6991/gitsigns.nvim" },
+  { src = "https://github.com/navarasu/onedark.nvim" },
+  { src = "https://github.com/nvim-treesitter/nvim-treesitter" },
+  { src = "https://github.com/folke/which-key.nvim" },
+  { src = 'https://github.com/Saghen/blink.cmp', version = vim.version.range('*') },
+  { src = 'https://github.com/saghen/blink.compat' },
+  { src = "https://github.com/tpope/vim-fugitive" },
+})
+
+vim.lsp.enable({
+  "lua_ls",
+  "gopls",
+  "vtsls",
+  "basedpyright",
+})
+
+
+-- vim.diagnostic.config({
+--   virtual_lines = { current_line = false }
+-- })
+--
+require ("justice").setup({})
+
+require("tiny-inline-diagnostic").setup({
+    transparent_bg = true,
+    transparent_cursorline = true,
+    options = {
+        use_icons_from_diagnostic = false,
+        -- Minimum number of characters before wrapping long messages
+        softwrap = 30,
+
+        add_messages = {
+            messages = true,           -- Show full diagnostic messages
+            display_count = false,     -- Show diagnostic count instead of messages when cursor not on line
+            use_max_severity = false,  -- When counting, only show the most severe diagnostic
+            show_multiple_glyphs = true, -- Show multiple icons for multiple diagnostics of same severity
+        },
+
+        -- Settings for multiline diagnostics
+        multilines = {
+            enabled = true,           -- Enable support for multiline diagnostic messages
+            always_show = true,       -- Always show messages on all lines of multiline diagnostics
+            trim_whitespaces = false,  -- Remove leading/trailing whitespace from each line
+            tabstop = 4,               -- Number of spaces per tab when expanding tabs
+            severity = nil,            -- Filter multiline diagnostics by severity (e.g., { vim.diagnostic.severity.ERROR })
+          },
+
+        -- Show all diagnostics on the current cursor line, not just those under the cursor
+        show_all_diags_on_cursorline = true,
+
+        -- Display related diagnostics from LSP relatedInformation
+        show_related = {
+            enabled = true,           -- Enable displaying related diagnostics
+            max_count = 3,             -- Maximum number of related diagnostics to show per diagnostic
+        },
+
+        -- Enable diagnostics display in insert mode
+        -- May cause visual artifacts; consider setting throttle to 0 if enabled
+        enable_on_insert = false,
+
+        -- Enable diagnostics display in select mode (e.g., during auto-completion)
+        enable_on_select = false,
+
+        -- Handle messages that exceed the window width
+        overflow = {
+            mode = "wrap",             -- "wrap": split into lines, "none": no truncation, "oneline": keep single line
+            padding = 0,               -- Extra characters to trigger wrapping earlier
+        },
+
+        -- Break long messages into separate lines
+        break_line = {
+            enabled = false,           -- Enable automatic line breaking
+            after = 30,                -- Number of characters before inserting a line break
+        },
+
+        -- Custom function to format diagnostic messages
+        -- Receives diagnostic object, returns formatted string
+        -- Example: function(diag) return diag.message .. " [" .. diag.source .. "]" end
+        format = nil,
+
+        -- Virtual text display priority
+        -- Higher values appear above other plugins (e.g., GitBlame)
+        virt_texts = {
+            priority = 2048,
+        },
+
+        -- Filter diagnostics by severity levels
+        -- Remove severities you don't want to display
+        severity = {
+            vim.diagnostic.severity.ERROR,
+            vim.diagnostic.severity.WARN,
+            vim.diagnostic.severity.INFO,
+            vim.diagnostic.severity.HINT,
+        },
+
+        -- Events that trigger attaching diagnostics to buffers
+        -- Default is {"LspAttach"}; change only if plugin doesn't work with your LSP setup
+        overwrite_events = nil,
+
+        -- Automatically disable diagnostics when opening diagnostic float windows
+        override_open_float = false,
+    },
+})
+require("snacks").setup({
+  picker = {
+    layout = {
+      preset = "default",
+    },
+    formatters = {
+      file = {
+        filename_only = false,
+      },
+    },
+  },
+})
+require "oil".setup({
+  view_options = {
+    -- Show files and directories that start with "."
+    show_hidden = true,
+  }
+})
+require "mason".setup()
+require "hardtime".setup()
+--require "precognition".setup()
+require "gitsigns".setup()
+require "colorizer".setup()
+require "blink.cmp".setup({
+fuzzy = { implementation = "prefer_rust" },
+  completion = { documentation = { auto_show = true } },
+  keymap = {
+    preset = "default",
+    ['<Tab>'] = { 'select_and_accept' },
+  },
+})
+
+require "onedark".setup({
+  -- Main options --
+  style = 'darker',
+  transparent = false,
+  term_colors = true,
+  ending_tildes = false,
+  cmp_itemkind_reverse = false,
+
+  code_style = {
+    comments = 'italic',
+    keywords = 'none',
+    functions = 'none',
+    strings = 'none',
+    variables = 'none'
+  },
+
+  -- Custom Highlights --
+  colors = {
+    bg0 = "#0f0f18",
+    --bg0 = "#14141f",
+    bg1 = "#1b1b28",
+    bg2 = "#222230",
+    bg3 = "#292936",
+    bg_d = "#0f0f18",
+    bg_blue = "#505e99",
+
+  }, -- Override default colors
+  highlights = {
+  }, -- Override highlight groups
+
+  -- Plugins Config --
+  diagnostics = {
+    darker = true,     -- darker colors for diagnostic
+    undercurl = true,  -- use undercurl instead of underline for diagnostics
+    background = true, -- use background color for virtual text
+  },
+})
+
+require "onedark".load()
+
+
+require "nvim-treesitter.configs".setup({
+
+  build = ":TSUpdate",
+  indent = {
+    enable = false,
+  },
+  autotag = {
+    enable = true,
+  },
+  event = {
+    "BufReadPre",
+    "BufNewFile",
+  },
+  ensure_installed = {
+    "go",
+    "elixir",
+    "markdown",
+    "json",
+    "javascript",
+    "typescript",
+    "yaml",
+    "bash",
+    "lua",
+    "dockerfile",
+    "solidity",
+    "gitignore",
+    "python",
+    "vue",
+    "svelte",
+    "toml",
+    "scala",
+    "hocon"
+  },
+  auto_install = true,
+  highlight = {
+    enable = true,
+    additional_vim_regex_highlighting = false,
+  },
+  incremental_selection = {
+    enable = true,
+    keymaps = {
+      init_selection = "<C-s>",
+      node_incremental = "<C-s>",
+      scope_incremental = false,
+      node_decremental = "<BS>",
+    },
+  },
+})
+
+vim.keymap.set('n', '<leader>o', ':update<CR> :source<CR>')
+local snacks = require("snacks")
+
+vim.keymap.set('n', '<leader>ff', function()
+  snacks.picker.files()
+end, { desc = 'Snacks files' })
+vim.keymap.set('n', '<leader>fg', function()
+  snacks.picker.grep({ live = true })
+end, { desc = 'Snacks grep live' })
+vim.keymap.set('n', '<leader>fG', function()
+  snacks.picker.grep({ live = false })
+end, { desc = 'Snacks grep' })
+vim.keymap.set('n', '<leader>fb', function()
+  snacks.picker.buffers()
+end, { desc = 'Snacks buffers' })
+vim.keymap.set('n', '<leader>fr', function()
+  snacks.picker.lsp_references()
+end, { desc = 'Snacks references' })
+vim.keymap.set('n', '<leader>fd', function()
+  snacks.picker.diagnostics({ filter = { cwd = true } })
+end, { desc = 'Snacks project diagnostics' })
+vim.keymap.set('n', '<leader>hn', '<cmd>Gitsigns next_hunk<CR>')
+vim.keymap.set('n', '<leader>hp', '<cmd>Gitsigns prev_hunk<CR>')
+vim.keymap.set('n', '<leader>hr', '<cmd>Gitsigns reset_hunk<CR>')
+vim.keymap.set('i', '<C-k>', function() vim.lsp.buf.signature_help() end)
+vim.keymap.set('n', '<leader>e', ':Oil<CR>')
+-- Navigate splits using Ctrl+h/j/k/l
+vim.keymap.set('n', '<C-h>', '<C-w>h', { noremap = true, silent = true })
+vim.keymap.set('n', 'C-j>', '<C-w>j', { noremap = true, silent = true })
+vim.keymap.set('n', '<C-k>', '<C-w>k', { noremap = true, silent = true })
+vim.keymap.set('n', '<C-l>', '<C-w>l', { noremap = true, silent = true })
+
+vim.keymap.set("t", "<Esc>", "<C-\\><C-N>")
+vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
+vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
+
+vim.keymap.set("n", "<C-d>", "<C-d>zz")
+vim.keymap.set("n", "<C-u>", "<C-u>zz")
+vim.keymap.set("x", "<leader>p", [["_dP]])
+vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]])
+vim.keymap.set({ "n", "v" }, "<leader>yA", "ggVG\"+y")
+vim.keymap.set("n", "<leader>Y", [["+Y]])
+vim.keymap.set("i", "<C-c>", "<Esc>")
+vim.keymap.set("i", "jj", "<Esc>")
+
+vim.keymap.set("n", "Q", "<nop>")
+vim.keymap.set({ "n", "v", "i" }, "<PageUp>", "<nop>")
+vim.keymap.set({ "n", "v", "i" }, "<PageDown>", "<nop>")
+vim.keymap.set("n", "<leader>k", "<cmd>lnext<CR>zz")
+vim.keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz")
+
+vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gc<Left><Left><Left>]])
+
+
+-- Define your statusline
+-- %f                    - Path to the file
+-- %{FugitiveStatusline()} - The Git branch function
+-- %m                    - Modified flag ([+])
+-- %r                    - Read-only flag ([RO])
+-- %=                    - Separator (moves next items to the right)
+-- %l                    - Current line number
+-- %c                    - Current column number
+-- %P                    - Percentage through the file
+vim.o.statusline = "%f %= %{FugitiveStatusline()} %m%r%l:%c %P"
+vim.cmd("colorscheme onedark")
+local function set_snacks_picker_hl()
+  vim.api.nvim_set_hl(0, "SnacksPickerDir", { link = "SnacksPickerFile" })
+end
+set_snacks_picker_hl()
+vim.api.nvim_create_autocmd("ColorScheme", {
+  callback = set_snacks_picker_hl,
+})
+vim.cmd(":hi statusline guibg=NONE")
+
+
+-- LSP keymappings
+local lsp_keymaps = function(bufnr)
+  -- Go to definition
+  vim.keymap.set('n', '<leader>gd', vim.lsp.buf.definition,
+    { buffer = bufnr, noremap = true, silent = true, desc = "Go to definition" })
+
+  -- Find references with Telescope
+  vim.keymap.set('n', '<leader>gr', vim.lsp.buf.references,
+    { buffer = bufnr, noremap = true, silent = true, desc = "Find references" })
+
+  -- Find implementations with Telescope
+  vim.keymap.set('n', '<leader>gi', '<cmd>Telescope lsp_implementations<CR>',
+    { buffer = bufnr, noremap = true, silent = true, desc = "Find implementations" })
+
+  -- Go to declaration
+  vim.keymap.set('n', '<leader>gD', vim.lsp.buf.declaration,
+    { buffer = bufnr, noremap = true, silent = true, desc = "Go to declaration" })
+
+  -- Show hover documentation
+  vim.keymap.set('n', '<leader>gh', vim.lsp.buf.hover,
+    { buffer = bufnr, noremap = true, silent = true, desc = "Show hover documentation" })
+
+  -- Peek definition with lspsaga on Alt+Shift+K
+  vim.keymap.set('n', '<M-S-k>', '<cmd>Lspsaga peek_definition<CR>',
+    { buffer = bufnr, noremap = true, silent = true, desc = "Peek definition" })
+
+  -- Show signature help
+  vim.keymap.set('n', '<leader>gs', vim.lsp.buf.signature_help,
+    { buffer = bufnr, noremap = true, silent = true, desc = "Show signature help" })
+
+  -- Rename symbol
+  vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename,
+    { buffer = bufnr, noremap = true, silent = true, desc = "Rename symbol" })
+
+  -- Code actions
+  vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action,
+    { buffer = bufnr, noremap = true, silent = true, desc = "Code actions" })
+
+  -- Show diagnostics for current line
+  vim.keymap.set('n', '<leader>ld', vim.diagnostic.open_float,
+    { buffer = bufnr, noremap = true, silent = true, desc = "Show line diagnostics" })
+
+  -- Show all diagnostics in Telescope
+  vim.keymap.set('n', '<leader>da', '<cmd>Telescope diagnostics<CR>',
+    { buffer = bufnr, noremap = true, silent = true, desc = "Show all diagnostics" })
+end
+
+-- highlight on yank
+local highlight_yank_group = vim.api.nvim_create_augroup("HighlightYankGroup", {})
+vim.api.nvim_create_autocmd("TextYankPost", {
+  group = highlight_yank_group,
+  callback = function()
+    vim.highlight.on_yank()
+  end,
+})
+
+vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
+  pattern = { "*.go" },
+  callback = function()
+    vim.opt.tabstop = 4
+    vim.opt.shiftwidth = 4
+    vim.opt.expandtab = false -- Go prefers tabs
+  end
+})
+
+-- LSP attach with lspsaga and formatting
+vim.api.nvim_create_autocmd('LspAttach', {
+  group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
+  callback = function(ev)
+    --local client = vim.lsp.get_client_by_id(ev.data.client_id)
+    --if client:supports_method('textDocument/completion') then
+    --  vim.lsp.completion.enable(true, client.id, ev.buf, { autotrigger = true })
+    --end
+    -- Set up keymappings
+    lsp_keymaps(ev.buf)
+
+    -- Auto-format on save
+    vim.api.nvim_create_autocmd('BufWritePre', {
+      buffer = ev.buf,
+      callback = function()
+        vim.lsp.buf.format({ bufnr = ev.buf })
+      end,
+    })
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "go",
+  callback = function()
+    vim.opt_local.makeprg = "./static-analysis.sh --plain"
+    vim.opt_local.errorformat = [[%f:%l:%c: %m,%f:%l: %m]]
+  end,
+})
+
+-- Justfile support
+-- Function to get just recipes
+local function get_just_recipes()
+  local justfile_exists = vim.fn.filereadable("justfile") == 1 or 
+                          vim.fn.filereadable("Justfile") == 1 or
+                          vim.fn.filereadable(".justfile") == 1
+  if not justfile_exists then
+    return {}
+  end
+  
+  local recipes = {}
+  local handle = io.popen("just --summary 2>/dev/null")
+  if handle then
+    local result = handle:read("*a")
+    handle:close()
+    -- just --summary outputs recipes separated by spaces
+    for recipe in result:gmatch("%S+") do
+      table.insert(recipes, recipe)
+    end
+  end
+  return recipes
+end
+
+-- Custom completion function for :make command
+vim.api.nvim_create_user_command('Make', function(opts)
+  if opts.args == '' then
+    vim.cmd('make')
+  else
+    vim.cmd('make ' .. opts.args)
+  end
+end, {
+  nargs = '?',
+  complete = function(ArgLead, CmdLine, CursorPos)
+    local recipes = get_just_recipes()
+    if #recipes == 0 then
+      return {}
+    end
+    -- Filter recipes that match the current input
+    local matches = {}
+    for _, recipe in ipairs(recipes) do
+      if recipe:find('^' .. vim.pesc(ArgLead)) then
+        table.insert(matches, recipe)
+      end
+    end
+    return matches
+  end,
+  desc = "Run make with just recipe completion"
+})
+
+-- Detect justfiles and set makeprg
+vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
+  pattern = {"justfile", "Justfile", ".justfile"},
+  callback = function()
+    vim.bo.filetype = "just"
+    vim.opt_local.makeprg = "just"
+    vim.opt_local.errorformat = [[%f:%l:%c: %m,%f:%l: %m]]
+  end,
+})
+
+-- Auto-detect justfile in current directory and set makeprg
+vim.api.nvim_create_autocmd({"VimEnter", "DirChanged"}, {
+  callback = function()
+    local justfile_exists = vim.fn.filereadable("justfile") == 1 or 
+                            vim.fn.filereadable("Justfile") == 1 or
+                            vim.fn.filereadable(".justfile") == 1
+    if justfile_exists then
+      vim.opt.makeprg = "just"
+      vim.opt.errorformat = [[%f:%l:%c: %m,%f:%l: %m]]
+    end
+  end,
+})
+
+-- Keymap to list available just recipes
+vim.keymap.set('n', '<leader>jl', function()
+  local justfile_exists = vim.fn.filereadable("justfile") == 1 or 
+                          vim.fn.filereadable("Justfile") == 1 or
+                          vim.fn.filereadable(".justfile") == 1
+  if justfile_exists then
+    vim.cmd('terminal just --list')
+  else
+    print("No justfile found in current directory")
+  end
+end, { noremap = true, silent = true, desc = "List just recipes" })
