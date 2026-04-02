@@ -47,6 +47,9 @@ vim.g.mapleader = " "
 vim.opt.winborder = "rounded"
 vim.o.termguicolors = true
 
+vim.cmd("packadd nvim.undotree")
+vim.keymap.set("n", "<leader>u", require("undotree").open)
+
 vim.pack.add({
   { src = "https://github.com/kdheepak/lazygit.nvim" },
   { src = "https://github.com/chrisgrieser/nvim-justice" },
