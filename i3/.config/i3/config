@@ -71,7 +71,7 @@ bindcode $mod+Shift+19    move container to workspace  $ws10
 ######################################
 
 # start a terminal
-bindsym $mod+Return exec --no-startup-id wezterm
+bindsym $mod+Return exec --no-startup-id i3-msg '[class="Alacritty"] focus' || alacritty -e tmux new-session -A -s default
 
 # kill focused window
 bindsym $mod+q kill
