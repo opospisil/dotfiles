@@ -1,9 +1,7 @@
 #!/bin/bash
 
 DIRS=(
-    "$HOME/code"
-    "/vault/code"
-    "$HOME/code/dtsp"
+    "$HOME/.config"
 )
 
 if [[ $# -eq 1 ]]; then
@@ -11,7 +9,6 @@ if [[ $# -eq 1 ]]; then
 else
     selected=$(fd . "${DIRS[@]}" --type=dir --follow --max-depth=1 --full-path --base-directory $HOME \
         | sed "s|^$HOME/||" \
-        | grep -v "^code/dtsp$" \
         | sk --margin 10% )
 
     [[ $selected ]] && selected="$HOME/$selected"
