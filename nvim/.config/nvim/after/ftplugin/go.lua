@@ -23,3 +23,5 @@ vim.api.nvim_buf_create_user_command(0, 'Lint', 'make -s', {
 -- Set the makeprg for this buffer to your script
 -- The '-s' flag for make silences the "make: '...' is up to date." messages
 vim.bo.makeprg = './revive.sh'
+
+vim.treesitter.start()

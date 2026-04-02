@@ -240,7 +240,7 @@ require "onedark".setup({
 require "onedark".load()
 
 
-require "nvim-treesitter.configs".setup({
+require "nvim-treesitter".setup({
 
   build = ":TSUpdate",
   indent = {
