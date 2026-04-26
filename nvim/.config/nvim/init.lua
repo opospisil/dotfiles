@@ -177,8 +177,17 @@ require("snacks").setup({
         filename_only = false,
       },
     },
+    sources = {
+      files = {
+        exclude = { "vendor/**" },
+      },
+      grep = {
+        exclude = { "vendor/**" },
+      },
+    },
   },
 })
+
 require "oil".setup({
   view_options = {
     -- Show files and directories that start with "."
@@ -292,22 +301,25 @@ require "nvim-treesitter".setup({
 vim.keymap.set('n', '<leader>o', ':update<CR> :source<CR>')
 local snacks = require("snacks")
 
+vim.keymap.set('n', '<leader>fs', function()
+  snacks.picker.lsp_symbols()
+end, { desc = 'Snacks lsp symbols' })
 vim.keymap.set('n', '<leader>ff', function()
   snacks.picker.files()
 end, { desc = 'Snacks files' })
+vim.keymap.set('n', '<leader>fdf', function()
+  snacks.picker.git_diff()
+end, { desc = 'Snacks git diff' })
 vim.keymap.set('n', '<leader>fg', function()
   snacks.picker.grep({ live = true })
 end, { desc = 'Snacks grep live' })
-vim.keymap.set('n', '<leader>fG', function()
-  snacks.picker.grep({ live = false })
-end, { desc = 'Snacks grep' })
 vim.keymap.set('n', '<leader>fb', function()
   snacks.picker.buffers()
 end, { desc = 'Snacks buffers' })
 vim.keymap.set('n', '<leader>fr', function()
   snacks.picker.lsp_references()
 end, { desc = 'Snacks references' })
-vim.keymap.set('n', '<leader>fd', function()
+vim.keymap.set('n', '<leader>fdd', function()
   snacks.picker.diagnostics({ filter = { cwd = true } })
 end, { desc = 'Snacks project diagnostics' })
 vim.keymap.set('n', '<leader>hn', '<cmd>Gitsigns next_hunk<CR>')

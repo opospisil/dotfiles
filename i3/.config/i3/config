@@ -52,7 +52,7 @@ bindsym F10    workspace  $ws10
 
 bindsym $mod+o exec xrandr --auto && xrandr --delmonitor vdp-1 && xrandr --delmonitor vdp-3 --delmonitor vdp-2
 
-bindsym $mod+p exec ~/.local/bin/3screen
+bindsym $mod+p exec ~/.screenlayout/mono.sh
 
 # move focused container to workspace
 bindcode $mod+Shift+10    move container to workspace  $ws1
@@ -187,12 +187,14 @@ workspace $ws9 output vdp-3
 workspace $ws10 output vdp-3
 
 # bind program to workspace and focus to them on startup:
-for_window [class="Brave-browser"] move to workspace $ws1
+for_window [class="brave-browser"] move to workspace $ws1
+for_window [class="Alacritty"] move to workspace $ws3
+for_window [class="spotify"] move to workspace $ws10
 for_window [class="Chromium"] move to workspace $ws8
 for_window [class="Slack"] move to workspace $ws9
 for_window [class="teams-for-linux"] move to workspace $ws9
 
-exec --no-startup-id brave-browser-stable
+exec --no-startup-id brave
 exec --no-startup-id chromium
 exec --no-startup-id slack
 exec --no-startup-id teams
