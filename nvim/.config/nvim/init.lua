@@ -298,7 +298,6 @@ require "nvim-treesitter".setup({
   },
 })
 
-vim.keymap.set('n', '<leader>o', ':update<CR> :source<CR>')
 local snacks = require("snacks")
 
 vim.keymap.set('n', '<leader>fs', function()
@@ -327,6 +326,15 @@ vim.keymap.set('n', '<leader>hp', '<cmd>Gitsigns prev_hunk<CR>')
 vim.keymap.set('n', '<leader>hr', '<cmd>Gitsigns reset_hunk<CR>')
 vim.keymap.set('i', '<C-k>', function() vim.lsp.buf.signature_help() end)
 vim.keymap.set('n', '<leader>e', ':Oil<CR>')
+vim.keymap.set('n', '<leader>os', function()
+  require('opencode').pick_session()
+end, { desc = 'Opencode sessions' })
+vim.keymap.set({ 'n', 'x' }, '<leader>oo', function()
+  require('opencode').open_prompt()
+end, { desc = 'Opencode prompt' })
+vim.keymap.set('n', '<leader>ox', function()
+  require('opencode').clear_session()
+end, { desc = 'Opencode clear session' })
 -- Navigate splits using Ctrl+h/j/k/l
 vim.keymap.set('n', '<C-h>', '<C-w>h', { noremap = true, silent = true })
 vim.keymap.set('n', 'C-j>', '<C-w>j', { noremap = true, silent = true })
@@ -364,7 +372,7 @@ vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gc<Left><Left><
 -- %l                    - Current line number
 -- %c                    - Current column number
 -- %P                    - Percentage through the file
-vim.o.statusline = "%f %= %{FugitiveStatusline()} %m%r%l:%c %P"
+vim.o.statusline = "%f %= %{v:lua.OpencodeStatusline()} %{FugitiveStatusline()} %m%r%l:%c %P"
 vim.cmd("colorscheme onedark")
 local function set_snacks_picker_hl()
   vim.api.nvim_set_hl(0, "SnacksPickerDir", { link = "SnacksPickerFile" })
