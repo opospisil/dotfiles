@@ -51,14 +51,14 @@ vim.cmd("packadd nvim.undotree")
 vim.keymap.set("n", "<leader>u", require("undotree").open)
 
 vim.pack.add({
-  { src = "https://github.com/kdheepak/lazygit.nvim" },
+  { src = "https://github.com/catppuccin/nvim", name = "catppuccin" },
+  { src = "https://github.com/shaunsingh/nord.nvim" }, 
   { src = "https://github.com/chrisgrieser/nvim-justice" },
   { src = "https://github.com/rachartier/tiny-inline-diagnostic.nvim" },
   { src = "https://github.com/mrcjkb/rustaceanvim" },
   { src = "https://github.com/m4xshen/hardtime.nvim"},
   { src = "https://github.com/norcalli/nvim-colorizer.lua" },
   { src = "https://github.com/nvim-tree/nvim-web-devicons" },
-  { src = "https://github.com/vague2k/vague.nvim" },
   { src = "https://github.com/stevearc/oil.nvim" },
   { src = "https://github.com/folke/snacks.nvim" },
   { src = "https://github.com/nvim-treesitter/nvim-treesitter" },
@@ -135,7 +135,7 @@ require("tiny-inline-diagnostic").setup({
 
         -- Break long messages into separate lines
         break_line = {
-            enabled = false,           -- Enable automatic line breaking
+            enabled = true,           -- Enable automatic line breaking
             after = 30,                -- Number of characters before inserting a line break
         },
 
@@ -324,6 +324,8 @@ end, { desc = 'Snacks project diagnostics' })
 vim.keymap.set('n', '<leader>hn', '<cmd>Gitsigns next_hunk<CR>')
 vim.keymap.set('n', '<leader>hp', '<cmd>Gitsigns prev_hunk<CR>')
 vim.keymap.set('n', '<leader>hr', '<cmd>Gitsigns reset_hunk<CR>')
+vim.keymap.set('n', '<leader>hs', '<cmd>Gitsigns stage_hunk<CR>')
+vim.keymap.set('n', '<C-h>', '<cmd>Gitsigns preview_hunk<CR>')
 vim.keymap.set('i', '<C-k>', function() vim.lsp.buf.signature_help() end)
 vim.keymap.set('n', '<leader>e', ':Oil<CR>')
 vim.keymap.set('n', '<leader>os', function()
@@ -336,7 +338,7 @@ vim.keymap.set('n', '<leader>ox', function()
   require('opencode').clear_session()
 end, { desc = 'Opencode clear session' })
 -- Navigate splits using Ctrl+h/j/k/l
-vim.keymap.set('n', '<C-h>', '<C-w>h', { noremap = true, silent = true })
+-- vim.keymap.set('n', '<C-h>', '<C-w>h', { noremap = true, silent = true })
 vim.keymap.set('n', 'C-j>', '<C-w>j', { noremap = true, silent = true })
 vim.keymap.set('n', '<C-k>', '<C-w>k', { noremap = true, silent = true })
 vim.keymap.set('n', '<C-l>', '<C-w>l', { noremap = true, silent = true })
@@ -561,3 +563,9 @@ vim.keymap.set('n', '<leader>jl', function()
     print("No justfile found in current directory")
   end
 end, { noremap = true, silent = true, desc = "List just recipes" })
+
+vim.api.nvim_create_user_command("Wwp", function()
+    vim.cmd("write ++p")
+end, {})
+
+vim.cmd("cabbrev wwp Wwp")

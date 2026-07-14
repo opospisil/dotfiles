@@ -151,9 +151,52 @@ local function active_mode()
   return state.config.default_mode
 end
 
+local function normalize_model(model)
+  if type(model) ~= 'table' or type(model.providerID) ~= 'string' or type(model.modelID) ~= 'string' then
+    return nil
+  end
+
+  return {
+    providerID = model.providerID,
+    modelID = model.modelID,
+    label = model.label,
+  }
+end
+
+local function active_model()
+  local entry = active_entry()
+  return entry and normalize_model(entry.model) or nil
+end
+
+local function model_display(model)
+  model = normalize_model(model)
+  if not model then
+    return 'default'
+  end
+
+  return model.label or (model.providerID .. '/' .. model.modelID)
+end
+
+local function same_model(left, right)
+  left = normalize_model(left)
+  right = normalize_model(right)
+  if not left or not right then
+    return left == nil and right == nil
+  end
+
+  return left.providerID == right.providerID and left.modelID == right.modelID
+end
+
 local function set_mode(mode)
   local entry = ensure_entry()
   entry.mode = mode
+  save_state()
+  redraw_statusline()
+end
+
+local function set_active_model(model)
+  local entry = ensure_entry()
+  entry.model = normalize_model(model)
   save_state()
   redraw_statusline()
 end
@@ -334,8 +377,12 @@ local function current_selection()
     return nil
   end
 
-  local start_pos = vim.fn.getpos("'<")
-  local end_pos = vim.fn.getpos("'>")
+  local start_pos = vim.fn.getpos('v')
+  local end_pos = vim.fn.getpos('.')
+  if start_pos[2] == 0 or end_pos[2] == 0 then
+    return nil
+  end
+
   local lines = vim.fn.getregion(start_pos, end_pos, { type = mode })
   local start_line = math.min(start_pos[2], end_pos[2])
   local end_line = math.max(start_pos[2], end_pos[2])
@@ -422,6 +469,82 @@ local function list_sessions()
   end)
 
   return filtered
+end
+
+local function list_model_choices()
+  local providers, err = request('GET', '/provider', {
+    query = {
+      directory = current_directory(),
+    },
+  })
+  if not providers then
+    return nil, err
+  end
+
+  local connected = {}
+  for _, provider_id in ipairs(providers.connected or {}) do
+    connected[provider_id] = true
+  end
+
+  local items = {
+    {
+      label = 'Use configured default',
+    },
+  }
+
+  local provider_items = vim.deepcopy(providers.all or {})
+  table.sort(provider_items, function(left, right)
+    return (left.name or left.id or '') < (right.name or right.id or '')
+  end)
+
+  for _, provider in ipairs(provider_items) do
+    if provider.id and connected[provider.id] then
+      local model_items = {}
+      for model_id, model in pairs(provider.models or {}) do
+        local resolved_model_id = model.id or model_id
+        table.insert(model_items, {
+          label = string.format('%s: %s', provider.name or provider.id, model.name or resolved_model_id),
+          model = {
+            providerID = provider.id,
+            modelID = resolved_model_id,
+            label = provider.id .. '/' .. resolved_model_id,
+          },
+        })
+      end
+
+      table.sort(model_items, function(left, right)
+        return left.label < right.label
+      end)
+      vim.list_extend(items, model_items)
+    end
+  end
+
+  return items
+end
+
+local function pick_model(current_model, callback)
+  local items, err = list_model_choices()
+  if not items then
+    notify(err, vim.log.levels.ERROR)
+    return
+  end
+
+  vim.ui.select(items, {
+    prompt = 'Opencode model',
+    format_item = function(item)
+      local label = item.label
+      if same_model(item.model, current_model) then
+        label = '* ' .. label
+      end
+      return label
+    end,
+  }, function(choice)
+    if not choice then
+      return
+    end
+
+    callback(choice.model)
+  end)
 end
 
 local function create_session(callback)
@@ -516,30 +639,40 @@ local function ensure_session(callback)
   pick_session(callback)
 end
 
-local function submit_prompt(session, mode, text)
+local function submit_prompt(session, mode, model, text)
+  local body = {
+    agent = mode,
+    parts = {
+      {
+        type = 'text',
+        text = text,
+      },
+    },
+  }
+
+  local selected_model = normalize_model(model)
+  if selected_model then
+    body.model = {
+      providerID = selected_model.providerID,
+      modelID = selected_model.modelID,
+    }
+  end
+
   return request('POST', '/session/' .. session.id .. '/prompt_async', {
     query = {
       directory = normalize_path(session.directory or current_directory()),
     },
-    body = {
-      agent = mode,
-      parts = {
-        {
-          type = 'text',
-          text = text,
-        },
-      },
-    },
+    body = body,
   })
 end
 
-local function prompt_title(mode)
+local function prompt_title(mode, model)
   local session = active_session()
   local title = session and short_session_title(session) or 'no session'
-  return string.format(' Opencode [%s] %s ', mode, shorten(title, 40))
+  return string.format(' Opencode [%s] [%s] %s ', mode, shorten(model_display(model), 36), shorten(title, 40))
 end
 
-local function open_prompt_window(lines)
+local function open_prompt_window(lines, mode, model)
   local buf = vim.api.nvim_create_buf(false, true)
   vim.bo[buf].buftype = 'nofile'
   vim.bo[buf].bufhidden = 'wipe'
@@ -559,7 +692,7 @@ local function open_prompt_window(lines)
     height = height,
     style = 'minimal',
     border = 'rounded',
-    title = prompt_title(active_mode()),
+    title = prompt_title(mode, model),
     title_pos = 'center',
   })
 
@@ -578,11 +711,14 @@ function M.open_prompt()
 
   ensure_session(function(session)
 
-    local buf, win = open_prompt_window(lines)
+    local mode = active_mode()
+    local model = active_model()
+    local buf, win = open_prompt_window(lines, mode, model)
     local ctx = {
       buf = buf,
       win = win,
-      mode = active_mode(),
+      mode = mode,
+      model = model,
     }
 
     local function close_prompt()
@@ -597,7 +733,7 @@ function M.open_prompt()
       end
 
       local config = vim.api.nvim_win_get_config(ctx.win)
-      config.title = prompt_title(ctx.mode)
+      config.title = prompt_title(ctx.mode, ctx.model)
       vim.api.nvim_win_set_config(ctx.win, config)
     end
 
@@ -607,6 +743,15 @@ function M.open_prompt()
       update_title()
     end
 
+    local function select_model()
+      pick_model(ctx.model, function(selected_model)
+        ctx.model = normalize_model(selected_model)
+        set_active_model(ctx.model)
+        update_title()
+        notify('Opencode model: ' .. model_display(ctx.model))
+      end)
+    end
+
     local function submit()
       local prompt_lines = vim.api.nvim_buf_get_lines(ctx.buf, 0, -1, false)
       if not prompt_has_request(prompt_lines) then
@@ -614,7 +759,7 @@ function M.open_prompt()
         return
       end
 
-      local _, err, status = submit_prompt(session, ctx.mode, table.concat(prompt_lines, '\n'))
+      local _, err, status = submit_prompt(session, ctx.mode, ctx.model, table.concat(prompt_lines, '\n'))
       if err then
         if status == 404 then
           clear_active_session()
@@ -636,6 +781,11 @@ function M.open_prompt()
     vim.keymap.set({ 'n', 'i' }, '<C-s>', submit, {
       buffer = ctx.buf,
       desc = 'Submit opencode prompt',
+      silent = true,
+    })
+    vim.keymap.set('n', 'm', select_model, {
+      buffer = ctx.buf,
+      desc = 'Select opencode model',
       silent = true,
     })
     vim.keymap.set('n', '<Esc>', close_prompt, {

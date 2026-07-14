@@ -1,9 +1,9 @@
 #!/bin/bash
 
-SESSION="backend"
+SESSION=$(tmux display-message -p '#S')
 WINDOW="services"
-BACKEND_DIR="$HOME/code/dtsp/backend"
-SERVICES=("gateway" "identity" "target" "container" "satellite" "project" "sbom")
+BACKEND_DIR=$PWD
+SERVICES=("gateway" "identity" "target" "container" "satellite" "project" "sbom" "shiftleft")
 
 # Check if we're in a tmux session
 if [[ -z "$TMUX" ]]; then
